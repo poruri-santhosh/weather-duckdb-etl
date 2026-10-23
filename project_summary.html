@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b2d">
+  <meta name="description" content="A one-page overview of the Weather DuckDB ETL project.">
+  <title>Weather DuckDB ETL | Project Summary</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --panel: #121e30;
+      --panel-light: #17263b;
+      --border: rgba(178, 199, 223, .14);
+      --text: #edf4fc;
+      --muted: #a8b8cc;
+      --accent: #78e1c0;
+      --blue: #8fb9ff;
+      --warm: #ffd28a;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 85% 0%, rgba(82, 137, 210, .16), transparent 36rem),
+        var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent); text-underline-offset: .2em; }
+
+    .page {
+      width: min(1080px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 44px 0 64px;
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      color: var(--muted);
+      font-size: .82rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .topline strong { color: var(--accent); font-weight: 700; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      margin-top: 28px;
+      padding: clamp(30px, 6vw, 68px);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      background: linear-gradient(135deg, rgba(25, 43, 66, .96), rgba(14, 27, 44, .95));
+    }
+
+    .hero::after {
+      position: absolute;
+      top: -100px;
+      right: -70px;
+      width: 330px;
+      height: 330px;
+      border: 1px solid rgba(120, 225, 192, .18);
+      border-radius: 50%;
+      box-shadow: 0 0 0 34px rgba(120, 225, 192, .035), 0 0 0 70px rgba(120, 225, 192, .025);
+      content: "";
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      letter-spacing: -.065em;
+      line-height: 1.02;
+    }
+
+    .lede {
+      max-width: 690px;
+      margin: 22px 0 0;
+      color: #c5d3e4;
+      font-size: clamp(1rem, 2vw, 1.16rem);
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 26px;
+    }
+
+    .badge {
+      padding: 6px 11px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(9, 18, 31, .35);
+      color: #d7e3f0;
+      font-size: .82rem;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: 18px 0 0;
+    }
+
+    .metric, .card, .city, .view-card, .step {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(18, 30, 48, .88);
+    }
+
+    .metric { padding: 20px; }
+    .metric-value { color: var(--accent); font-size: 1.8rem; font-weight: 750; letter-spacing: -.04em; }
+    .metric-label { margin-top: 4px; color: var(--muted); font-size: .86rem; }
+
+    section { margin-top: 46px; }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.45rem, 3vw, 2rem);
+      letter-spacing: -.035em;
+    }
+
+    .section-intro { margin: 0 0 20px; color: var(--muted); }
+
+    .grid-3, .views, .cities, .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card, .view-card, .step { padding: 21px; }
+
+    .icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      margin-bottom: 16px;
+      place-items: center;
+      border: 1px solid rgba(120, 225, 192, .2);
+      border-radius: 12px;
+      background: rgba(120, 225, 192, .08);
+      color: var(--accent);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    h3 { margin: 0 0 8px; font-size: 1.04rem; }
+    .card p, .view-card p, .step p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .cities { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .city { padding: 16px; color: #dce7f3; font-size: .92rem; }
+    .city span { display: block; margin-top: 3px; color: var(--muted); font-size: .8rem; }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    .step { padding: 18px; }
+    .step-index { color: var(--accent); font-size: .76rem; font-weight: 700; letter-spacing: .12em; }
+    .step h3 { margin-top: 8px; }
+    .step-arrow { display: none; }
+
+    .quality {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .quality .card { padding: 23px; }
+    ul { margin: 12px 0 0; padding-left: 20px; color: var(--muted); }
+    li + li { margin-top: 6px; }
+
+    code {
+      padding: .14em .4em;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: rgba(6, 14, 24, .58);
+      color: #c5dcff;
+      font-family: Consolas, "SFMono-Regular", ui-monospace, monospace;
+      font-size: .9em;
+      overflow-wrap: anywhere;
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 15px 18px;
+      border-left: 3px solid var(--warm);
+      border-radius: 0 12px 12px 0;
+      background: rgba(255, 210, 138, .07);
+      color: #d9cbb1;
+      font-size: .9rem;
+    }
+
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    @media (max-width: 760px) {
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3, .views { grid-template-columns: 1fr; }
+      .cities { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pipeline { grid-template-columns: 1fr; }
+      .quality { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 420px) {
+      .page { width: min(100% - 28px, 1080px); padding-top: 24px; }
+      .metrics { gap: 9px; }
+      .metric { padding: 15px; }
+      .metric-value { font-size: 1.55rem; }
+      .topline { align-items: flex-start; flex-direction: column; gap: 4px; }
+    }
+
+    @media print {
+      :root { color-scheme: light; --bg: #fff; --panel: #fff; --text: #172333; --muted: #45556a; --border: #d8e0e9; }
+      body { background: #fff; color: #172333; font-size: 10pt; }
+      .page { width: 100%; padding: 0; }
+      .hero, .metric, .card, .city, .view-card, .step { background: #fff; break-inside: avoid; }
+      .hero { padding: 28px; }
+      .hero::after { display: none; }
+      .lede, .badge, .city, code { color: #24364c; }
+      section { margin-top: 24px; }
+      a { color: #165b4a; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline">
+      <strong>Project brief</strong>
+      <span>Data engineering · Airflow · DuckDB</span>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow">Automated weather data platform</p>
+      <h1>Weather DuckDB ETL</h1>
+      <p class="lede">
+        An hourly pipeline that collects weather observations for five cities,
+        validates each reading, and stores query-ready time series in DuckDB.
+        Operators can also trigger a rolling historical backfill when needed.
+      </p>
+      <div class="badges" aria-label="Technology stack">
+        <span class="badge">Apache Airflow 2.10</span>
+        <span class="badge">Python 3.12</span>
+        <span class="badge">DuckDB</span>
+        <span class="badge">Docker Compose</span>
+        <span class="badge">Open-Meteo API</span>
+      </div>
+    </header>
+
+    <div class="metrics" aria-label="Project at a glance">
+      <div class="metric"><div class="metric-value">5</div><div class="metric-label">global city locations</div></div>
+      <div class="metric"><div class="metric-value">5</div><div class="metric-label">weather metrics per reading</div></div>
+      <div class="metric"><div class="metric-value">30 days</div><div class="metric-label">maximum manual backfill</div></div>
+      <div class="metric"><div class="metric-value">3</div><div class="metric-label">DuckDB analytics views</div></div>
+    </div>
+
+    <section aria-labelledby="overview-heading">
+      <h2 id="overview-heading">What the project does</h2>
+      <p class="section-intro">
+        A small, reproducible data pipeline with orchestration, data checks,
+        persistent analytical storage, and a documented local run path.
+      </p>
+      <div class="grid-3">
+        <article class="card">
+          <div class="icon" aria-hidden="true">01</div>
+          <h3>Collect</h3>
+          <p>
+            Calls the Open-Meteo forecast API for current readings on the hourly
+            schedule, or requests up to 30 days of historical hourly data on a
+            manual run.
+          </p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">02</div>
+          <h3>Validate</h3>
+          <p>
+            Checks required fields and numeric values, rejects duplicate
+            city-hour records, and enforces reasonable bounds for temperature,
+            humidity, pressure, and wind.
+          </p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true">03</div>
+          <h3>Load and analyze</h3>
+          <p>
+            Uses a DuckDB primary key and upsert to make repeated loads
+            idempotent, then exposes hourly, daily, and city-comparison views.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="locations-heading">
+      <h2 id="locations-heading">Coverage and data</h2>
+      <p class="section-intro">
+        Each reading includes location, UTC timestamp, temperature, relative
+        humidity, surface pressure, wind speed, and a weather code.
+      </p>
+      <div class="cities">
+        <div class="city">Vijayawada<span>India</span></div>
+        <div class="city">Hyderabad<span>India</span></div>
+        <div class="city">Bengaluru<span>India</span></div>
+        <div class="city">London<span>United Kingdom</span></div>
+        <div class="city">New York<span>United States</span></div>
+      </div>
+      <div class="callout">
+        A full 30-day window represents approximately 720 hourly readings per
+        city, or 3,600 across five cities, subject to API availability and
+        returned data.
+      </div>
+    </section>
+
+    <section aria-labelledby="flow-heading">
+      <h2 id="flow-heading">Pipeline flow</h2>
+      <p class="section-intro">Three Airflow tasks run in sequence; failed tasks are retried.</p>
+      <div class="pipeline">
+        <article class="step">
+          <div class="step-index">TASK 01</div>
+          <h3>Extract</h3>
+          <p>Request current or backfill data from Open-Meteo for each location.</p>
+        </article>
+        <article class="step">
+          <div class="step-index">TASK 02</div>
+          <h3>Validate</h3>
+          <p>Check schema, numeric ranges, and uniqueness before loading.</p>
+        </article>
+        <article class="step">
+          <div class="step-index">TASK 03</div>
+          <h3>Upsert</h3>
+          <p>Write readings using the <code>(city, timestamp)</code> key.</p>
+        </article>
+        <article class="step">
+          <div class="step-index">STORAGE</div>
+          <h3>DuckDB</h3>
+          <p>Persist the local analytical database at <code>data/weather_data.db</code>.</p>
+        </article>
+        <article class="step">
+          <div class="step-index">ANALYTICS</div>
+          <h3>SQL views</h3>
+          <p>Query summarized weather trends and aligned city differences.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="quality-heading">
+      <h2 id="quality-heading">Data integrity and analytical outputs</h2>
+      <p class="section-intro">Guardrails run before a batch is written to the database.</p>
+      <div class="quality">
+        <article class="card">
+          <h3>Validation checks</h3>
+          <ul>
+            <li>Required location, timestamp, and weather fields must be present.</li>
+            <li>Metrics must be finite numeric values; timestamps must parse as UTC.</li>
+            <li>Temperature must be between −50°C and 60°C.</li>
+            <li>Humidity must be between 0% and 100%; pressure must be positive.</li>
+            <li>Wind speed cannot be negative; city-hour keys must be unique.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>DuckDB views</h3>
+          <ul>
+            <li><code>hourly_weather_summary</code> — hourly metric averages per city.</li>
+            <li><code>daily_city_weather_summary</code> — daily temperature min/average/max and metric averages.</li>
+            <li><code>hourly_city_weather_comparison</code> — same-hour temperature and humidity deltas between city pairs.</li>
+            <li>Primary key plus upsert ensures reruns update existing city-hour records.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="run-heading">
+      <h2 id="run-heading">Run locally</h2>
+      <p class="section-intro">
+        On Windows, Airflow runs in its supported Linux container through Docker Desktop and WSL 2.
+      </p>
+      <div class="steps">
+        <article class="step">
+          <div class="step-index">1 · START</div>
+          <p><code>docker compose up --build -d</code></p>
+        </article>
+        <article class="step">
+          <div class="step-index">2 · OPEN</div>
+          <p>Visit <code>http://localhost:8080</code>; credentials are printed in the Airflow logs.</p>
+        </article>
+        <article class="step">
+          <div class="step-index">3 · BACKFILL</div>
+          <p>Trigger the DAG with <code>{"backfill_days": 30}</code>, or leave it at <code>0</code> for current readings.</p>
+        </article>
+      </div>
+      <div class="callout">
+        This is a local portfolio/demo project. Airflow availability, task
+        success, and zero duplicates are not claimed as measured production
+        service-level results.
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>Weather DuckDB ETL · Project summary</span>
+      <span><a href="https://github.com/poruri-santhosh/weather-duckdb-etl">View project on GitHub</a></span>
+    </footer>
+  </main>
+</body>
+</html>

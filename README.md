@@ -5,6 +5,9 @@ validates each reading, and stores it in DuckDB. Manual runs can also request
 up to 30 days of hourly history. DuckDB upserts prevent duplicate city-hour
 records when a run is repeated.
 
+See the [one-page project summary](project_summary.html) for an overview of the
+pipeline, data checks, analytics, and local run steps.
+
 ## Requirements
 
 - Windows with Docker Desktop installed and its WSL 2 engine enabled.
