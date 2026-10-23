@@ -1,0 +1,6 @@
+.git
+.venv
+venv
+__pycache__
+airflow_home
+data
